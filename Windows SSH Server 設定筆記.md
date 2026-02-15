@@ -77,6 +77,21 @@ New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Pr
 
 ---
 
+## SSH 登入權限說明
+
+SSH 登入後的權限取決於該 Windows 帳號的身分，且**不經過 UAC**：
+
+| 帳號類型 | SSH 登入後的權限 |
+|----------|-----------------|
+| 一般使用者 | 一般權限 |
+| Administrators 群組成員 | **直接獲得管理員權限** |
+
+這與本機操作不同：在本機即使是管理員帳號，執行需要提升權限的操作時會跳出 UAC 提示。但 SSH 登入不會觸發 UAC，管理員帳號登入後直接就是完整的管理員權限。
+
+> **安全提醒**：正因為 SSH 繞過 UAC，管理員帳號的 SSH 存取應特別注意保護（使用 Key 認證、限制來源 IP 等）。
+
+---
+
 ## SSH Key 認證（免密碼登入）
 
 ### 1. 在 Client 端產生金鑰
@@ -178,6 +193,35 @@ Host my-server
 ```
 
 之後在 VS Code 連線時，直接選 `my-server` 即可。
+
+---
+
+## 檔案傳輸（SCP / SFTP）
+
+透過 SSH 通道即可傳輸檔案，不需要額外設定。
+
+### scp（單次複製）
+
+```bash
+# 複製遠端檔案到本地
+scp username@server:D:/path/to/file.txt ./local/
+
+# 複製遠端資料夾到本地
+scp -r username@server:D:/path/to/folder ./local/
+
+# 複製本地檔案到遠端
+scp ./local/file.txt username@server:D:/path/to/
+```
+
+### sftp（互動式）
+
+```bash
+sftp username@server
+# 進入後可用 ls, cd 瀏覽遠端
+get file.txt           # 下載單檔
+get -r folder          # 下載資料夾
+put file.txt           # 上傳單檔
+```
 
 ---
 
