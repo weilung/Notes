@@ -406,6 +406,7 @@ Set-VM -Name 'Windows10-RDP' -AutomaticStopAction Save
 5. 啟動 VM
 6. 啟用 RDP + 防火牆規則
 7. 設定固定 IP（如有指定）
+8. 重新命名電腦為 VM 名稱並重新啟動
 
 ### 目前的 VM 列表
 | VM | IP | 用途 |
@@ -415,7 +416,33 @@ Set-VM -Name 'Windows10-RDP' -AutomaticStopAction Save
 
 ---
 
-## 十五、完成事項
+## 十五、Sysprep 嘗試記錄（已放棄）
+
+曾嘗試對母版 VM 執行 Sysprep 一般化，以便複製出擁有獨立 SID 的 VM。
+最終因多次失敗而放棄，已恢復母版至 Sysprep 前的狀態。
+
+### 遇到的問題
+
+| 嘗試 | 問題 | 說明 |
+|------|------|------|
+| 第 1 次 | LanguageExperiencePackzh-TW 錯誤 | 語言包未對所有使用者佈建 (0x80073cf2) |
+| 第 2 次 | Sysprep 無法完成 | 移除語言包後執行，VM 長時間無回應（30+ 分鐘） |
+| 第 3 次 | Sysprep 無法完成 | 移除所有未佈建的 Appx 套件後執行，結果相同 |
+
+### 原因分析
+- Windows 10 1803 經過大量更新後，系統內建的 UWP/Appx 套件狀態不一致
+- 許多系統套件無法移除（如 Microsoft.Windows.* 系列）
+- 這是已知的 Windows 10 Sysprep 相容性問題
+
+### 結論
+- 家用環境下，直接複製 VHDX（不執行 Sysprep）即可使用
+- SID 重複在非網域環境不影響使用
+- Clone 腳本已包含重新命名電腦名稱的步驟，足以區分不同 VM
+- 如未來需要獨立 SID，建議使用全新安裝而非 Sysprep
+
+---
+
+## 十六、完成事項
 
 - [x] BIOS 啟用 Intel VT-x
 - [x] 啟用 Hyper-V
@@ -428,8 +455,9 @@ Set-VM -Name 'Windows10-RDP' -AutomaticStopAction Save
 - [x] 建立 External 虛擬交換器
 - [x] 設定固定 IP
 - [x] 設定自動啟動 VM
-- [x] 建立 Clone 腳本（含自動啟用 RDP）
+- [x] 建立 Clone 腳本（含自動啟用 RDP + 電腦重新命名）
 - [x] 從母版複製 Win10-A
+- [x] Sysprep 嘗試（已放棄，直接複製即可）
 
 ---
 
@@ -446,8 +474,9 @@ powershell -ExecutionPolicy Bypass -File "D:\software\Windows10_Optimize.ps1"
 ```
 
 ### 複製 VM 後注意事項
-- 複製的 VM 與母版有相同的 SID 和電腦名稱，家用環境下不影響使用
-- 如需加入網域，應先執行 Sysprep 一般化再複製
+- 複製的 VM 與母版有相同的 SID，家用環境下不影響使用
+- Clone 腳本會自動將電腦名稱改為 VM 名稱，無需手動修改
+- 如需加入網域，應全新安裝而非複製（Sysprep 在更新過的 Win10 1803 上不穩定）
 - 每台 VM 需設定不同的固定 IP，避免衝突
 
 ---
