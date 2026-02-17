@@ -2,7 +2,9 @@
 
 ## 概述
 
-一台 PC 有多個使用者共用，各自有不同的 GitHub 帳號。如果使用 HTTPS 認證，Windows 認證管理員（Credential Manager）只能存一組認證，導致 push 時用到別人的帳號。
+多人共用**同一個 Windows 帳號**，各自有不同的 GitHub 帳號。如果使用 HTTPS 認證，Windows 認證管理員（Credential Manager）只能存一組認證，導致 push 時用到別人的帳號。
+
+> **注意**：如果每個人有各自的 Windows 帳號（不同的 `C:\Users\<名稱>`），各自的 `~/.ssh/` 和認證管理員本來就是分開的，不會有帳號衝突問題。本篇針對的是**共用同一個 Windows 帳號**的情境。
 
 本篇說明：
 1. HTTPS 與 SSH Key 認證的運作差異
