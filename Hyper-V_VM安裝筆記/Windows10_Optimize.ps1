@@ -29,7 +29,7 @@ $services = @(
     @{ Name = 'icssvc';             Desc = 'Windows Mobile Hotspot' },
     @{ Name = 'WbioSrvc';           Desc = 'Windows Biometric Service' },
     @{ Name = 'TabletInputService'; Desc = 'Touch Keyboard and Handwriting' },
-    @{ Name = 'Fax';                Desc = 'Fax Service' },
+    @{ Name = 'Fax';                Desc = 'Fax Service' }
     # @{ Name = 'PrintNotify';        Desc = 'Printer Extensions and Notifications' }  # Enable if using printer
 )
 
