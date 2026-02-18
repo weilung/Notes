@@ -28,7 +28,7 @@ $services = @(
     @{ Name = 'wisvc';              Desc = 'Windows Insider Service' },
     @{ Name = 'icssvc';             Desc = 'Windows Mobile Hotspot' },
     @{ Name = 'WbioSrvc';           Desc = 'Windows Biometric Service' },
-    @{ Name = 'TabletInputService'; Desc = 'Touch Keyboard and Handwriting' },
+    # @{ Name = 'TabletInputService'; Desc = 'Touch Keyboard and Handwriting' },  # Disable if IME is not needed
     @{ Name = 'Fax';                Desc = 'Fax Service' }
     # @{ Name = 'PrintNotify';        Desc = 'Printer Extensions and Notifications' }  # Enable if using printer
 )
