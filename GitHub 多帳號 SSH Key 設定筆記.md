@@ -101,7 +101,17 @@ ssh-keygen -t ed25519 -C "user-b@example.com" -f ~/.ssh/id_ed25519_user_b
 ssh-keygen -t ed25519 -C "user-c@example.com" -f ~/.ssh/id_ed25519_user_c
 ```
 
-> **說明**：`-f` 參數指定檔案名稱，避免覆蓋預設的 `id_ed25519`。passphrase 可設可不設，設了更安全但每次使用需輸入。
+**參數說明：**
+
+| 參數 | 說明 |
+|------|------|
+| `-t ed25519` | 指定加密演算法。`ed25519` 是目前推薦的演算法，比舊式的 `rsa` 更安全且金鑰更短 |
+| `-C "..."` | 為 Key 加上標籤（comment），通常填 email 方便辨識，不影響 Key 本身的功能 |
+| `-f ~/.ssh/id_ed25519_user_a` | 指定輸出檔名。**不指定時預設為 `~/.ssh/id_ed25519`**，多帳號時必須指定不同檔名，否則後產生的 Key 會覆蓋前一個 |
+
+> **單帳號情境**：如果只有一個 GitHub 帳號，可以不加 `-f`，直接用預設的 `~/.ssh/id_ed25519`，SSH 連線時會自動找到這個檔案，也不需要額外設定 `~/.ssh/config`。
+
+> **檔名命名規則**：預設檔名 `id_ed25519` 由兩部分組成——`id`（identity 縮寫，SSH Key 的慣例前綴）加上演算法名稱（`ed25519`）。多帳號時在後面加上使用者名稱以區分，例如 `id_ed25519_user_a`。
 
 產生後會有兩個檔案：
 
@@ -109,6 +119,8 @@ ssh-keygen -t ed25519 -C "user-c@example.com" -f ~/.ssh/id_ed25519_user_c
 ~/.ssh/id_ed25519_user_a       ← 私鑰（不要外傳）
 ~/.ssh/id_ed25519_user_a.pub   ← 公鑰（要貼到 GitHub）
 ```
+
+passphrase 可設可不設，設了更安全但每次使用需輸入（可用 ssh-agent 避免重複輸入，見常見問題）。
 
 ### 2. 將公鑰加到 GitHub 帳號
 
@@ -202,15 +214,35 @@ ssh -T github-user-c
 
 如果看到 `Hi <帳號名>!` 就代表設定成功。
 
+> **首次連線提示**：第一次連線到 GitHub 時，可能會出現以下提示：
+> ```
+> The authenticity of host 'github.com (...)' can't be established.
+> Are you sure you want to continue connecting (yes/no)?
+> ```
+> 這是 SSH 在確認伺服器身份，輸入 `yes` 並按 Enter 即可。確認後會將 GitHub 的 fingerprint 記錄到 `~/.ssh/known_hosts`，之後不會再詢問。
+
 ### 6. 現有 repo 從 HTTPS 轉換為 SSH
 
-如果已有 repo 使用 HTTPS remote，可以直接修改：
+**先確認目前使用的認證方式：**
 
 ```bash
-# 查看目前的 remote URL
 git remote -v
-# 輸出範例：origin  https://github.com/user-a/my-repo.git (fetch)
+```
 
+從輸出的 URL 格式可以判斷：
+
+```
+# HTTPS 認證（URL 以 https:// 開頭）
+origin  https://github.com/user-a/my-repo.git (fetch)
+
+# SSH 認證（URL 以 git@ 開頭）
+origin  git@github.com:user-a/my-repo.git (fetch)
+origin  git@github-user-a:user-a/my-repo.git (fetch)  ← 使用別名
+```
+
+**若為 HTTPS，改為 SSH：**
+
+```bash
 # 改為 SSH（使用對應的別名）
 git remote set-url origin git@github-user-a:user-a/my-repo.git
 
@@ -284,10 +316,26 @@ Start-Service ssh-agent
 
 單帳號可以，但多帳號**一定要設定 SSH config**。因為 `github.com` 只有一個，SSH 無法自動判斷該用哪把 Key，必須透過不同的 Host 別名來區分。
 
+### Q: 如何查詢電腦上是否已有 HTTPS 認證？
+
+```bash
+cmdkey /list
+```
+
+輸出中若出現 `git:https://github.com`，代表有存 GitHub 的 HTTPS 認證。也可以到 **控制台** → **認證管理員** → **Windows 認證** 分頁查看。
+
 ### Q: 已經在認證管理員裡存了 HTTPS 認證，需要刪除嗎？
 
 改用 SSH 後，HTTPS 認證不會影響 SSH 連線。但建議清除以避免混淆：
 
+**方法一：指令（快）**
+```bash
+cmdkey /delete:git:https://github.com
+```
+
+**方法二：介面**
 1. 開啟 **控制台** → **認證管理員**（Credential Manager）
 2. 找到 `git:https://github.com`
 3. 點擊 **移除**
+
+清除後可再執行 `cmdkey /list` 確認已移除。
