@@ -219,7 +219,9 @@ ssh -T github-user-c
 > The authenticity of host 'github.com (...)' can't be established.
 > Are you sure you want to continue connecting (yes/no)?
 > ```
-> 這是 SSH 在確認伺服器身份，輸入 `yes` 並按 Enter 即可。確認後會將 GitHub 的 fingerprint 記錄到 `~/.ssh/known_hosts`，之後不會再詢問。
+> 這是 SSH 在確認**伺服器**身份，輸入 `yes` 並按 Enter 即可。
+>
+> 確認後會將 `github.com` 的 fingerprint 記錄到 `~/.ssh/known_hosts`。因為 `known_hosts` 記錄的是伺服器（`github.com`），而不是 GitHub 帳號，所以**只要出現一次**即可——之後不論用哪個帳號別名（`github-user-a`、`github-user-b`…）連線，都不會再詢問。
 
 ### 6. 現有 repo 從 HTTPS 轉換為 SSH
 
