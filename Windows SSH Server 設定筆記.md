@@ -100,16 +100,36 @@ SSH 登入後的權限取決於該 Windows 帳號的身分，且**不經過 UAC*
 ssh-keygen -t ed25519
 ```
 
+若已有現成的 key（例如用於 GitHub），可直接沿用，不需重新產生。
+
 ### 2. 複製公鑰到 Server
 
-**方法 A - 手動複製（Windows 推薦）：**
+> ⚠️ **重要：管理員帳號與一般使用者的公鑰存放位置不同！**
+>
+> Windows OpenSSH 的 `sshd_config` 預設包含以下規則：
+> ```
+> Match Group administrators
+>     AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys
+> ```
+> 這表示 Administrators 群組的成員，公鑰**必須**放在 `C:\ProgramData\ssh\administrators_authorized_keys`，放在個人的 `~\.ssh\authorized_keys` 不會生效。
 
-把 Client 端的 `~/.ssh/id_ed25519.pub` 內容貼到 Server 端：
+| 帳號類型 | 公鑰存放位置 |
+|----------|-------------|
+| 一般使用者 | `C:\Users\<username>\.ssh\authorized_keys` |
+| Administrators 群組成員 | `C:\ProgramData\ssh\administrators_authorized_keys` |
 
-- 一般使用者：`C:\Users\<username>\.ssh\authorized_keys`
-- 管理員帳號：`C:\ProgramData\ssh\administrators_authorized_keys`
+**方法 A - 從 Windows Client 用 PowerShell 複製（推薦）：**
 
-**方法 B - 使用 ssh-copy-id（Linux/Mac Client）：**
+```powershell
+# 一行指令，執行時需輸入一次密碼
+type $env:USERPROFILE\.ssh\id_ed25519.pub | ssh Pinecone@192.168.1.x "Add-Content -Path 'C:\ProgramData\ssh\administrators_authorized_keys' -Value (Read-Host)"
+```
+
+**方法 B - 手動複製：**
+
+把 Client 端的 `~/.ssh/id_ed25519.pub` 內容貼到 Server 端對應位置。
+
+**方法 C - 使用 ssh-copy-id（Linux/Mac Client）：**
 
 ```bash
 ssh-copy-id username@server
@@ -117,10 +137,16 @@ ssh-copy-id username@server
 
 ### 3. 設定管理員帳號的 authorized_keys 權限
 
-如果是管理員帳號，需要特別設定權限：
+Windows OpenSSH 對權限很嚴格，若 `administrators_authorized_keys` 權限設定不正確，key 認證會被忽略。
 
 ```powershell
-# 在 Server 端執行
+# 在 Server 端執行（簡潔版）
+icacls C:\ProgramData\ssh\administrators_authorized_keys /inheritance:r /grant "SYSTEM:F" /grant "Administrators:F"
+```
+
+或使用 PowerShell 詳細版：
+
+```powershell
 $acl = Get-Acl C:\ProgramData\ssh\administrators_authorized_keys
 $acl.SetAccessRuleProtection($true, $false)
 $adminRule = New-Object System.Security.AccessControl.FileSystemAccessRule("Administrators","FullControl","Allow")
@@ -129,6 +155,8 @@ $acl.SetAccessRule($adminRule)
 $acl.SetAccessRule($systemRule)
 Set-Acl C:\ProgramData\ssh\administrators_authorized_keys $acl
 ```
+
+兩者效果相同，`icacls` 較簡潔，PowerShell 版較適合放在自動化腳本中。
 
 ---
 
@@ -190,9 +218,17 @@ PubkeyAuthentication yes
 Host my-server
     HostName 192.168.1.100
     User username
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
 ```
 
 之後在 VS Code 連線時，直接選 `my-server` 即可。
+
+> **提示**：`IdentityFile` 指定使用哪把 key，`IdentitiesOnly yes` 確保只用該 key 認證，不會嘗試其他 key。若有多個 SSH key（例如同時用於 GitHub 和內網機器），建議明確指定避免混淆。
+
+### 搭配 Claude Code 使用注意事項
+
+若本機 CPU 不支援 AVX 指令集，無法直接安裝 Claude Code，可透過 Remote-SSH 連到支援 AVX 的遠端機器，由遠端執行 Claude Code，本機只負責顯示介面。VS Code 的 Claude Code 擴充套件同樣需要遠端機器支援 AVX，因此擴充套件也應安裝在遠端端。
 
 ---
 
@@ -206,7 +242,7 @@ Host my-server
 # 複製遠端檔案到本地
 scp username@server:D:/path/to/file.txt ./local/
 
-# 複製遠端資料夾到本地
+# 複製遠端資料夾到本地（需加 -r）
 scp -r username@server:D:/path/to/folder ./local/
 
 # 複製本地檔案到遠端
