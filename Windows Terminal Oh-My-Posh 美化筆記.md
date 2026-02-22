@@ -159,6 +159,25 @@ oh-my-posh init powershell --config "$env:LOCALAPPDATA\oh-my-posh\themes\paradox
 
 ---
 
+## Step 9：設定 VS Code 字體
+
+開啟 VS Code，按 `Ctrl+Shift+P` → 搜尋 `Open User Settings (JSON)`，加入以下設定：
+
+```json
+// 編輯器字體（適合閱讀程式碼的字體）
+"editor.fontFamily": "Cascadia Code, Consolas, monospace",
+"editor.fontSize": 14,
+"editor.fontLigatures": true,
+
+// 終端機字體（必須設為 Nerd Font，oh-my-posh 圖示才能正確顯示）
+"terminal.integrated.fontFamily": "MesloLGM NF"
+```
+
+> **注意：** 編輯器與終端機的字體設定是分開的。
+> `terminal.integrated.fontFamily` 才是關鍵，沒設定的話 VS Code 內建終端機的 oh-my-posh 圖示會顯示為亂碼。
+
+---
+
 ## 換主題
 
 1. 下載新主題：
