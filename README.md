@@ -8,6 +8,7 @@
 - [Claude Code 多帳號使用教學](Claude%20Code%20多帳號使用教學.md)
 - [VS Code 系列編輯器擴展管理指南](VS%20Code%20系列編輯器擴展管理指南.md)
 - [VS Code 與 WSL 問題排查筆記](VS%20Code%20與%20WSL%20問題排查筆記.md)
+- [Windows Terminal Oh-My-Posh 美化筆記](Windows%20Terminal%20Oh-My-Posh%20美化筆記.md)
 
 ### 版本控制
 - [Git Rebase 與 Tag 處理筆記](Git%20Rebase%20與%20Tag%20處理筆記.md)
