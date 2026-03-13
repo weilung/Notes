@@ -16,8 +16,11 @@
 ## Step 2：安裝 PowerShell 7
 
 ```powershell
-winget install Microsoft.PowerShell
+winget install Microsoft.PowerShell --source winget
 ```
+
+> **注意：** 需加上 `--source winget` 明確指定來源。
+> winget 預設會同時搜尋 `winget` 和 `msstore` 兩個來源，若 Microsoft Store 的 SSL 憑證驗證失敗（錯誤碼 `0x8a15005e`），指令就會中斷，必須指定來源才能繼續。
 
 安裝完後 Windows Terminal 通常會自動偵測並新增 PowerShell 7 的 profile。
 

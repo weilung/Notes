@@ -4,8 +4,11 @@
 
 ## 筆記目錄
 
-### 開發工具
+### AI 工具
 - [Claude Code 多帳號使用教學](Claude%20Code%20多帳號使用教學.md)
+- [OpenClaw 本地 AI 助手安裝教學](OpenClaw%20本地%20AI%20助手安裝教學.md)
+
+### 開發工具
 - [VS Code 系列編輯器擴展管理指南](VS%20Code%20系列編輯器擴展管理指南.md)
 - [VS Code 與 WSL 問題排查筆記](VS%20Code%20與%20WSL%20問題排查筆記.md)
 - [Windows Terminal Oh-My-Posh 美化筆記](Windows%20Terminal%20Oh-My-Posh%20美化筆記.md)
