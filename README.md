@@ -16,10 +16,15 @@
 ### 版本控制
 - [Git Rebase 與 Tag 處理筆記](Git%20Rebase%20與%20Tag%20處理筆記.md)
 - [Git 分支管理指南](gitflow-pure-git.md)
+- [Git 移除誤入版控的建置產物教學](Git%20移除誤入版控的建置產物教學.md)
 - [GitHub 多帳號 SSH Key 設定筆記](GitHub%20多帳號%20SSH%20Key%20設定筆記.md)
 
 ### 開發流程
+- [OpenSpec 使用教學筆記](OpenSpec%20使用教學筆記.md)
 - [SDD-AI 協作開發模式介紹](SDD-AI協作開發模式介紹.md)
+
+### 程式設計觀念
+- [銀行家捨入法](銀行家捨入法.md)
 
 ### 資料庫
 - [SQL Server Schema 匯出與文件產生教學](SQL%20Server%20Schema%20匯出與文件產生教學.md)
